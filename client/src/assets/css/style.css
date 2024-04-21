@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap");
+
+.alex-brush-regular {
+    font-family: "Alex Brush", cursive !important;
+    font-weight: 800;
+    font-style: normal;
+    color: White;
+}
+.m_e615b15f {
+    overflow: visible !important;
+}
+.mantine-DatePickerInput-calendarHeader,
+.mantine-Calendar-calendarHeader {
+    display: flex;
+    justify-content: center;
+}
+.mantine-DatePickerInput-calendarHeaderControl,
+.mantine-Calendar-calendarHeaderControl {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+.mantine-Calendar-calendarHeader > .mantine-Calendar-calendarHeaderControl:nth-child(1) svg {
+    transform: rotate(90deg);
+    size: 10px;
+}
+.mantine-Calendar-calendarHeader > .mantine-Calendar-calendarHeaderControl:nth-child(3) svg {
+    transform: rotate(-90deg);
+}
+.mantine-DatePickerInput-calendarHeader
+    > .mantine-DatePickerInput-calendarHeaderControl:nth-child(1)
+    svg {
+    transform: rotate(90deg);
+    size: 10px;
+}
+.mantine-DatePickerInput-calendarHeader
+    > .mantine-DatePickerInput-calendarHeaderControl:nth-child(3)
+    svg {
+    transform: rotate(-90deg);
+}
+
+.m_396ce5cb {
+    width: 30px !important;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+}
+.m_396ce5cb:where([data-selected]) {
+    /* Styles for the selected child */
+    background-color: var(--mantine-primary-color-filled) !important;
+    color: var(--mantine-primary-color-contrast) !important;
+}
+
+/* Apply hover styles to [data-selected] when it's not disabled or static */
+.m_396ce5cb:where([data-selected]):hover:not([data-disabled]):not([data-static]) {
+    /* Styles for hovered selected child */
+    background-color: var(--mantine-primary-color-filled-hover) !important;
+}
+
+.m_396ce5cb:where([data-in-range]) {
+    background-color: var(--mantine-primary-color-light-hover) !important;
+    border-radius: 0 !important;
+}
+
+.book-service-container {
+    transform: rotateX(180deg);
+}
+
+.book-service-container > div {
+    transform: rotateX(180deg);
+}
+.cen-align {
+    text-align: center !important;
+}
