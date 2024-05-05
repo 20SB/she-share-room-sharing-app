@@ -104,8 +104,8 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
             alert("Please Choose Interval");
             return;
         }
-        console.log("startDate", startDate);
-        console.log("endDate", endDate);
+        // console.log("startDate", startDate);
+        // console.log("endDate", endDate);
         const start = dayjs(startDate).startOf("day");
         const end = dayjs(endDate).startOf("day");
 
@@ -116,7 +116,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
         while (currentDate.isBefore(end) || currentDate.isSame(end, "day")) {
             const formattedDate = currentDate.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
             if (availableDates.includes(formattedDate)) {
-                console.log(`pushing ${formattedDate} to valid Dates array`);
+                // console.log(`pushing ${formattedDate} to valid Dates array`);
                 validDates.push(formattedDate);
             }
             currentDate = currentDate.add(1, "day");
@@ -154,6 +154,20 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
         bookingDetails && showDatesFunc(bookingDetails.checkInDate, bookingDetails.checkOutDate);
     }, [bookingDetails]);
 
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => {
+            // console.log("Razorpay SDK loaded");
+        };
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
     const responsive = {
         superLargeDesktop: {
             breakpoint: { max: 4000, min: 3000 },
@@ -173,7 +187,6 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
         },
     };
 
-    console.log("listData: ", listData);
     const toggleCalendar = () => {
         setShowCalendar(!showCalendar);
     };
@@ -189,8 +202,6 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
         }
     };
 
-    console.log("checkInDate", startDate);
-    console.log("checkOutDate", endDate);
     const bookService = async () => {
         if (!startDate || !endDate) {
             alert("Please Choose Interval");
@@ -212,7 +223,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                 config
             )
             .then(({ data }) => {
-                console.log("data", data);
+                // console.log("data", data);
                 navigate("/my-booking");
             })
             .catch((error) => {
@@ -237,7 +248,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                 config
             )
             .then(({ data }) => {
-                console.log("data", data);
+                // console.log("data", data);
                 closeReviewModal();
             })
             .catch((error) => {
@@ -245,28 +256,100 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
             });
     };
 
-    const updateTransactionStatus = async () => {
+    const payNow = async (priceToBePaid) => {
+        // console.log("priceToBePaid", priceToBePaid);
+        try {
+            const response = await fetch(`${backendURL}/pay`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    bookingId: bookingDetails._id,
+                    name: user.name,
+                    amount: priceToBePaid,
+                    email: user.email,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create order");
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error creating order********:", error);
+            return null;
+        }
+    };
+
+    const updateTransactionStatus = async (paymentStatus) => {
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         };
 
+        setTransactionStatus(paymentStatus);
         axios
             .put(
                 `${backendURL}/booking/update-transaction?bookingId=${bookingDetails._id}`,
                 {
-                    transactionStatus: transactionStatus,
+                    transactionStatus: paymentStatus,
                 },
                 config
             )
-            .then(({ data }) => {
-                console.log("data", data);
-                closeTransactionModal();
-            })
+            .then(({ data }) => {})
             .catch((error) => {
                 console.log(error);
             });
+    };
+    const paymentHandler = async (priceToBePaid) => {
+        let paymentStatus = "Not Attempted";
+        const orderData = await payNow(priceToBePaid);
+        if (orderData && orderData.success) {
+            const options = {
+                key: orderData.key_id,
+                amount: orderData.amount,
+                currency: "INR",
+                name: orderData.product_name,
+                description: orderData.description,
+                image: "https://dummyimage.com/600x400/000/fff",
+                order_id: orderData.order_id,
+                handler: function (response) {
+                    // alert("Payment Completed");
+                    // console.log("uh hoooo payment successfull");
+                    updateTransactionStatus("Successfull");
+                    // Redirect or perform actions upon successful payment
+                },
+                prefill: {
+                    name: user.name,
+                    email: user.email,
+                },
+                notes: {
+                    description: orderData.description,
+                },
+                theme: {
+                    color: "#2300a3",
+                },
+            };
+
+            if (window.Razorpay) {
+                const razorpayObject = new window.Razorpay(options);
+                razorpayObject.on("payment.failed", function (response) {
+                    // alert("Payment Failed");
+                    updateTransactionStatus("Failed");
+                });
+                razorpayObject.open();
+            } else {
+                // console.error("Razorpay SDK not loaded");
+                updateTransactionStatus("Pending");
+            }
+        } else {
+            alert("Error creating order");
+            updateTransactionStatus("Pending");
+        }
     };
 
     const handleDropdownChange = (newValue) => {
@@ -276,7 +359,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
             },
         };
 
-        console.log(newValue);
+        // console.log(newValue);
         axios
             .put(
                 `${backendURL}/booking/guest-res?bookingId=${bookingDetails._id}`,
@@ -286,7 +369,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                 config
             )
             .then(({ data }) => {
-                console.log("data", data);
+                // console.log("data", data);
                 setIsDropdownOpen(false);
 
                 setSelectedGuestRes(data.booking.guestRes);
@@ -296,7 +379,6 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
             });
     };
 
-    console.log("present user", presentUser);
     return (
         <Card
             radius="md"
@@ -543,6 +625,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                     </Button>
                 )}
             </Group>
+
             {from === "MyBooking" && (
                 <div>
                     <hr />
@@ -604,14 +687,30 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                             alignItems: "center",
                         }}
                     >
-                        <Button variant="transparent" p={0} onClick={openTransactionModal}>
+                        {transactionStatus == "Successfull" ? (
+                            <Button variant="transparent" p={0} cursor="default">
+                                Payment Status
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="transparent"
+                                p={0}
+                                onClick={() => {
+                                    paymentHandler(listData.rate);
+                                }}
+                            >
+                                Pay Now
+                            </Button>
+                        )}
+
+                        {/* <Button variant="transparent" p={0} onClick={openTransactionModal}>
                             Update Payment Status
-                        </Button>
+                        </Button> */}
                         <Badge color={getBadgeColor(transactionStatus, "transaction")} size="sm">
                             {transactionStatus}
                         </Badge>
                     </div>
-                    <Modal
+                    {/* <Modal
                         opened={openedTransactionModal}
                         onClose={closeTransactionModal}
                         withCloseButton={false}
@@ -653,7 +752,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                                 Update Transaction Status
                             </Button>
                         </div>
-                    </Modal>
+                    </Modal> */}
                 </>
             )}
             {from === "MyBooking" &&
@@ -688,7 +787,7 @@ const PostCard = ({ listData, from, viewer, bookingDetails }) => {
                                 placeholder="Write a brief about your Experience"
                                 value={reviewComment}
                                 onChange={(e) => {
-                                    console.log(e.target.value);
+                                    // console.log(e.target.value);
                                     setReviewComment(e.target.value);
                                 }}
                             />

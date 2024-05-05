@@ -10,6 +10,7 @@ router.get("/", homeController.home);
 router.use("/user", require("./user_route"));
 router.use("/rental", require("./rental_routes"));
 router.use("/booking", require("./booking"));
+router.use("/pay", require("./payment"));
 
 // Export the main router to be used in your application
 module.exports = router;
