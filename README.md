@@ -2,7 +2,7 @@
 
  <h1 align="center">She Share</h1> 
 <p align="center">
- 🖊️ An interface for female users to share their rooma nd rent other females room.<br>
+ 🖊️ An interface for female users to share their room and rent other females room.<br>
      This App built using <a href="https://react.dev/">React</a>, <a href="https://www.mongodb.com/">MongoDB</a>, <a href="https://expressjs.com/">ExpressJs</a>, <a href="https://nodejs.org/en/">NodeJs</a>, and <a href="http://www.passportjs.org/">PassportJS</a>
 </p>
 
