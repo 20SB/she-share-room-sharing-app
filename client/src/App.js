@@ -12,11 +12,13 @@ import { MyBooking } from "./components/MyBooking";
 import { MySharing } from "./components/MySharing";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { NothingFoundBackground } from "./components/NothingFoundBackground";
+import { Toaster } from "react-hot-toast";
 
 function App() {
     const location = useLocation();
     return (
         <div className="App">
+            <Toaster position="top-right" />
             <Header />
             <Routes>
                 <Route path="/" Component={HomePage} />

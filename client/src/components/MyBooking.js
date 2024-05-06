@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { PostCard } from "./PostCard";
 import { useNavigate } from "react-router-dom";
+import PostCardSkeleton from "./PostCardSkeleton";
 
 export const MyBooking = () => {
     const navigate = useNavigate();
@@ -15,12 +16,12 @@ export const MyBooking = () => {
         const fetchMyBookings = async () => {
             const headers = {
                 Authorization: `Bearer ${token}`,
-              };
+            };
 
             axios
                 .get(`${backendURL}/booking/as-guest`, {
                     headers: headers,
-                  })
+                })
                 .then(({ data }) => {
                     if (data.bookings.length <= 0) {
                         navigate("/no-data");
@@ -35,7 +36,7 @@ export const MyBooking = () => {
 
         fetchMyBookings();
     }, [token]);
-    // console.log(bookings);
+    console.log("bookings", bookings);
     return (
         <>
             <div className="book-service-container" style={{ width: "100%", overflowX: "auto" }}>
@@ -49,16 +50,18 @@ export const MyBooking = () => {
                         boxSizing: "border-box",
                     }}
                 >
-                    {bookings.map((bkng) => (
-                        <div key={bkng._id}>
-                            <PostCard
-                                listData={bkng.rentalListing}
-                                bookingDetails={bkng}
-                                from={"MyBooking"}
-                                viewer={"Guest"}
-                            />
-                        </div>
-                    ))}
+                    {bookings.length > 0 &&
+                        bookings.map((bkng) => (
+                            <div key={bkng._id}>
+                                <PostCard
+                                    listData={bkng.rentalListing}
+                                    bookingDetails={bkng}
+                                    from={"MyBooking"}
+                                    viewer={"Guest"}
+                                />
+                            </div>
+                        ))}
+                    {bookings.length == 0 && <PostCardSkeleton />}
                 </div>
             </div>
         </>

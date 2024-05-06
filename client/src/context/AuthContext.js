@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 // Create the AuthContext with default values
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const backendURL = process.env.REACT_APP_API_KEY;
     useEffect(() => {
@@ -40,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     }, []); // The empty array ensures this effect runs only once on mount
 
     const login = async (email, password) => {
+        setIsLoading(true);
         try {
             const response = await axios.post(`${backendURL}/user/sign-in`, {
                 email,
@@ -48,6 +51,7 @@ export const AuthProvider = ({ children }) => {
             const data = response.data;
             console.log("data", data);
             //   setIsAuthenticated(true);
+            toast.success("Login Successfull");
             setUser(data.data.user);
             setToken(data.data.token);
             sessionStorage.setItem("user", JSON.stringify(data.data.user));
@@ -55,24 +59,30 @@ export const AuthProvider = ({ children }) => {
             navigate("/");
         } catch (error) {
             console.error("Login error:", error);
+            toast.error(error.response.data.message || "Login Failed");
         }
+
+        setIsLoading(false);
     };
 
     const register = async (value) => {
-       
+        setIsLoading(true);
         try {
             const response = await axios.post(`${backendURL}/user/sign-up`, value);
             const data = response.data;
             console.log("data", data);
             //   setIsAuthenticated(true);
+            toast.success("Registration Successfull");
             setUser(data.user);
             setToken(data.data.token);
             sessionStorage.setItem("user", JSON.stringify(data.data.user));
             sessionStorage.setItem("token", data.data.token);
             navigate("/");
         } catch (error) {
-            console.error("Login error:", error);
+            console.error("Registration error:", error);
+            toast.error(error.response.data.message || "Registration Failed");
         }
+        setIsLoading(false);
     };
 
     const logout = () => {
@@ -84,12 +94,15 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem("postRoom");
         sessionStorage.removeItem("buyRoom");
         sessionStorage.removeItem("newCityName");
-        navigate("/")
+        toast.success("Logout Successfull");
+        navigate("/");
     };
 
     console.log("user", user);
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, token, login, logout, register }}>
+        <AuthContext.Provider
+            value={{ isAuthenticated, user, token, login, logout, register, isLoading }}
+        >
             {children}
         </AuthContext.Provider>
     );

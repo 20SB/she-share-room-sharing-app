@@ -4,6 +4,7 @@ import axios from "axios";
 import { PostCard } from "./PostCard";
 import { MyRentalBooked } from "./MyRentalBooked";
 import { useNavigate } from "react-router-dom";
+import MySharingPostCardSkeleton from "./MySharingPostCardSkeleton";
 
 export const MySharing = () => {
     const backendURL = process.env.REACT_APP_API_KEY;
@@ -48,14 +49,18 @@ export const MySharing = () => {
                 flexDirection: "column",
             }}
         >
-            {bookingList.map((rentalPost) => (
-                <div key={rentalPost._id} style={{ display: "flex", gap: "20px" }}>
-                    <PostCard listData={rentalPost} from={"MySharing"} viewer={"Host"} />
-                    <div className="bookings-list" style={{ flex: 1 }}>
-                        {rentalPost.bookings && <MyRentalBooked bookings={rentalPost.bookings} />}
+            {bookingList.length > 0 &&
+                bookingList.map((rentalPost) => (
+                    <div key={rentalPost._id} style={{ display: "flex", gap: "20px" }}>
+                        <PostCard listData={rentalPost} from={"MySharing"} viewer={"Host"} />
+                        <div className="bookings-list" style={{ flex: 1 }}>
+                            {rentalPost.bookings && (
+                                <MyRentalBooked bookings={rentalPost.bookings} />
+                            )}
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            {bookingList.length == 0 && <MySharingPostCardSkeleton />}
         </div>
     );
 };
