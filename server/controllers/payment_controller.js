@@ -8,7 +8,7 @@ const razorpayInstance = new Razorpay({
 
 module.exports.createOrder = async (req, res) => {
     try {
-        // console.log("reaced here");
+        // console.log("reaced here");zz
         // console.log("body", req.body);
         const amount = req.body.amount * 100;
         const options = {

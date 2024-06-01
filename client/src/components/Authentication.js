@@ -71,15 +71,16 @@ export function AuthenticationForm(props) {
         <Flex justify="center" w={"100vw"} mt={"8vh"}>
             <Paper radius="md" p="xl" withBorder w={{ base: "90%", sm: "80%", lg: "40%" }}>
                 <Text size="lg" fw={500}>
-                    Welcome to Mantine, {type} with
+                    Welcome to She Share, {type} with
                 </Text>
 
-                <Group grow mb="md" mt="md">
+                {/* <Group grow mb="md" mt="md">
                     <GoogleButton radius="xl">Google</GoogleButton>
-                </Group>
+                </Group> */}
 
-                <Divider label="Or continue with email" labelPosition="center" my="lg" />
+                {/* <Divider label="Or continue with email" labelPosition="center" my="lg" /> */}
 
+                <hr />
                 <form onSubmit={form.onSubmit(handleRegister)}>
                     <Stack>
                         {type === "register" && (
