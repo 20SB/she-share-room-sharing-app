@@ -12,6 +12,7 @@ const MongoStore = require('connect-mongo');
 // Require database configuration
 const db = require("./config/mongoose");
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -30,13 +31,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(
-    cors({
-        origin: "*",
-        methods: "GET,POST,PUT,DELETE",
-        credentials: true,
-    })
-);
+// app.use(
+//     cors({
+//         origin: "*",
+//         methods: "GET,POST,PUT,DELETE",
+//         credentials: true,
+//     })
+// );
 
 // Use express router for routing
 app.use("/", require("./routes"));
