@@ -1,1 +1,19 @@
-{ "version": 2, "rewrites": [{ "source": "/(.*)", "destination": "/index.js" }] }
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.js",
+        "use": "@vercel/node",
+        "config": {
+          "include": ["**/*.js"]
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "index.js",
+        "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+      }
+    ]
+  }
