@@ -39,3 +39,4 @@ app.use("/", require("./routes"));
 app.listen(port, () => {
     console.log("SHE SHARE Server runing on port: ", port);
 });
+module.exports = app;
